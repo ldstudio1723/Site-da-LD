@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - LD Arte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="bg-gray-900 text-white font-sans antialiased overflow-hidden selection:bg-pink-500 selection:text-white">
+
+    <!-- Header Bar -->
+    <header
+        class="h-16 glass fixed top-0 w-full z-50 flex items-center justify-between px-6 lg:px-12 shadow-lg bg-gray-900/80 backdrop-blur-md">
+        <div class="flex items-center gap-3">
+            <div
+                class="w-8 h-8 bg-gradient-to-br from-pink-600 to-purple-500 rounded-lg flex items-center justify-center shadow-lg">
+                <span class="font-bold text-white text-lg">L</span>
+            </div>
+            <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                LD Arte <span class="text-pink-400">| Meu Perfil</span>
+            </h1>
+        </div>
+
+        <a href="dashboard.html" class="flex items-center gap-2 text-gray-400 hover:text-white transition group">
+            <span class="text-sm font-medium group-hover:underline">Voltar ao Dashboard</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </a>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12 px-6 lg:px-12 h-screen overflow-y-auto custom-scrollbar">
+        <div class="max-w-7xl mx-auto animate-fade-in">
+
+            <div class="flex justify-between items-center mb-8 border-b border-gray-700 pb-4">
+                <h2 class="text-3xl font-bold text-pink-400">Meu Perfil</h2>
+            </div>
+
+            <!-- Profile Content (Copied from Dashboard) -->
+            <div id="profile-content" class="animate-fade-in space-y-8">
+
+                <!-- 1. Header (Avatar + Info) -->
+                <div
+                    class="bg-gray-800 rounded-2xl p-6 border border-gray-700 flex items-center gap-6 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-50">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 text-gray-700 transform rotate-12"
+                            viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+
+                    <div onclick="openEmojiModal()"
+                        class="relative z-10 w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 p-1 shadow-lg cursor-pointer group">
+                        <div class="w-full h-full bg-gray-800 rounded-full flex items-center justify-center text-4xl font-bold text-white uppercase overflow-hidden"
+                            id="profile-avatar">
+                            --
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="relative z-10">
+                        <h3 class="text-3xl font-bold text-white mb-1" id="profile-name">Carregando...</h3>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="px-3 py-1 bg-blue-500/20 text-blue-300 text-xs font-bold uppercase tracking-wider rounded-full border border-blue-500/30"
+                                id="profile-role">
+                                ...
+                            </span>
+                            <span class="text-gray-400 text-sm flex items-center gap-1">
+                                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div> Online
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Grid Principal -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                    <!-- Col 1: Dados & Status -->
+                    <div class="space-y-8">
+
+                        <!-- Card: Dados Pessoais -->
+                        <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-lg">
+                            <h4 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                                </svg>
+                                Dados Pessoais
+                            </h4>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Nome de
+                                        Utilizador</label>
+                                    <div class="relative">
+                                        <input type="text" id="profile-username-input"
+                                            class="w-full bg-gray-900 border border-gray-700 focus:border-blue-500 focus:outline-none rounded-lg p-3 text-white transition">
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none hidden"
+                                            id="username-loading">
+                                            <svg class="animate-spin h-5 w-5 text-gray-400"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                    stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <span id="username-feedback"
+                                        class="text-xs transition-colors mt-1 block h-4"></span>
+                                </div>
+                                <div>
+                                    <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Email</label>
+                                    <input type="text" id="profile-email-input" disabled
+                                        class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-gray-500 cursor-not-allowed"
+                                        title="O email é gerado gerado automaticamente pelo sistema baseando-se no teu Nome de Utilizador.">
+                                </div>
+                                <div class="pt-2">
+                                    <button id="btn-save-username" onclick="saveUsername()" disabled
+                                        class="w-full bg-blue-600/50 text-white/50 cursor-not-allowed font-bold py-2.5 rounded-lg transition transform flex justify-center items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        Guardar Nome
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card: Status (Atividade) -->
+                        <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-lg">
+                            <h4 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                Status e Atividade
+                            </h4>
+
+                            <div class="space-y-6">
+                                <div
+                                    class="bg-gray-900 border border-gray-700 rounded-xl p-4 relative overflow-hidden group">
+                                    <div
+                                        class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-white" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex justify-between items-start mb-2">
+                                        <span class="text-sm text-gray-400">Desenhos Semanais</span>
+                                        <span id="activity-badge"
+                                            class="text-xs px-2 py-0.5 rounded border opacity-0 transition"></span>
+                                    </div>
+
+                                    <div class="mt-4 flex flex-col md:flex-row gap-6">
+                                        <!-- Total Feitos -->
+                                        <div>
+                                            <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Total Entregues:</p>
+                                            <div class="flex items-baseline gap-2">
+                                                <span class="text-4xl font-bold text-purple-400" id="activity-total">--</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Último Feito -->
+                                        <div>
+                                            <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Último desenho há:</p>
+                                            <div class="flex items-baseline gap-2">
+                                                <span class="text-4xl font-bold text-white" id="activity-days">--</span>
+                                                <span class="text-gray-400" id="activity-unit">dias</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Col 2: Segurança -->
+                    <div class="space-y-8">
+                        <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700 shadow-lg h-full">
+                            <h4 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                Segurança
+                            </h4>
+
+                            <div class="bg-gray-900/50 rounded-xl p-6 border border-gray-700/50">
+                                <h5 class="text-white font-bold mb-4">Alterar Senha</h5>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Nova
+                                            Senha</label>
+                                        <div class="relative">
+                                            <input type="password" id="new-password"
+                                                class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:border-blue-500 focus:outline-none transition"
+                                                placeholder="Mínimo 6 caracteres">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Confirmar
+                                            Nova Senha</label>
+                                        <div class="relative">
+                                            <input type="password" id="confirm-password"
+                                                class="w-full bg-gray-800 border border-gray-600 rounded-lg p-3 text-white focus:border-blue-500 focus:outline-none transition"
+                                                placeholder="Repita a senha">
+                                        </div>
+                                    </div>
+                                    <div class="pt-4">
+                                        <button onclick="changePassword()"
+                                            class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-600/20 transition transform active:scale-95 flex justify-center gap-2">
+                                            Atualizar Senha
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg flex gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 shrink-0"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <p class="text-xs text-yellow-200">
+                                    <strong>Nota de Segurança:</strong> Ao alterar a senha, poderá ser necessário fazer
+                                    login novamente.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- EMOJI PICKER MODAL -->
+        <div id="emoji-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center px-4">
+            <!-- Backdrop -->
+            <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeEmojiModal()"></div>
+
+            <!-- Modal Content -->
+            <div
+                class="bg-gray-800 border border-gray-700 rounded-2xl w-full max-w-sm max-h-[80vh] flex flex-col relative shadow-2xl animate-fade-in-up">
+                <!-- Header -->
+                <div class="flex justify-between items-center p-4 border-b border-gray-700">
+                    <h3 class="font-bold text-white">Escolhe um Avatar</h3>
+                    <button onclick="closeEmojiModal()" class="text-gray-400 hover:text-white transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Grid de Emojis -->
+                <div class="p-4 overflow-y-auto custom-scrollbar flex-1">
+                    <div id="emoji-grid" class="grid grid-cols-5 gap-3 text-3xl text-center">
+                        <!-- Gerado via JS -->
+                    </div>
+                </div>
+
+                <!-- Footer com botões de ação -->
+                <div class="p-4 border-t border-gray-700 flex gap-3">
+                    <button onclick="closeEmojiModal()"
+                        class="flex-1 px-4 py-2 text-gray-400 hover:text-white bg-gray-700/50 hover:bg-gray-700 rounded-lg transition font-medium text-sm">
+                        Cancelar
+                    </button>
+                    <button onclick="saveSelectedEmoji()"
+                        class="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-lg shadow-lg shadow-blue-600/20 transition text-sm">
+                        💾 Guardar Avatar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <!-- utils.js DEVE ser carregado primeiro: contém escapeHTML, sanitizeInput, requireSession -->
+    <script src="js/utils.js"></script>
+    <script src="js/profile.js"></script>
+    <script>
+        /**
+         * GUARD DE SESSÃO
+         * Verifica se existe uma sessão Supabase ativa antes de renderizar o perfil.
+         * Se não houver sessão, requireSession() redireciona automaticamente para index.html.
+         */
+        (async function () {
+            // Verificar sessão — redireciona para index.html se não estiver autenticado
+            const session = await requireSession('index.html');
+            if (!session) return; // requireSession já fez o redirect
+
+            // Sessão confirmada — inicializar módulo de perfil
+            if (window.initProfile) {
+                window.initProfile();
+            } else {
+                console.error("ERRO: initProfile não encontrado. Verifica se profile.js carregou corretamente.");
+            }
+        })();
+    </script>
+</body>
+
+</html>

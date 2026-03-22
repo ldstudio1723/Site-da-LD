@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Membros - LD Arte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="bg-gray-900 text-white font-sans antialiased overflow-hidden selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header Bar -->
+    <header
+        class="h-16 glass fixed top-0 w-full z-50 flex items-center justify-between px-6 lg:px-12 shadow-lg bg-gray-900/80 backdrop-blur-md">
+        <div class="flex items-center gap-3">
+            <div
+                class="w-8 h-8 bg-gradient-to-br from-indigo-600 to-purple-500 rounded-lg flex items-center justify-center shadow-lg">
+                <span class="font-bold text-white text-lg">L</span>
+            </div>
+            <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                LD Arte <span class="text-indigo-400">| Membros</span>
+            </h1>
+        </div>
+
+        <a href="dashboard.html" class="flex items-center gap-2 text-gray-400 hover:text-white transition group">
+            <span class="text-sm font-medium group-hover:underline">Voltar ao Dashboard</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </a>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12 px-6 lg:px-12 h-screen overflow-y-auto custom-scrollbar">
+        <div class="max-w-7xl mx-auto animate-fade-in">
+
+            <!-- Cabeçalho com botão de ação -->
+            <div class="flex justify-between items-center mb-8 border-b border-gray-700 pb-4">
+                <h2 class="text-3xl font-bold text-indigo-400">Gestão de Membros</h2>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500 hidden md:block">Apenas Administradores</span>
+                    <!-- Botão para criar novo membro — escondido por defeito para evitar FOUC -->
+                    <a href="cadastro.html" id="btn-create-member" style="display: none;"
+                        class="hidden items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-sm font-bold rounded-lg shadow-lg shadow-indigo-600/20 transition transform hover:scale-[1.02] active:scale-95">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        Criar Membro
+                    </a>
+                </div>
+            </div>
+
+            <!-- Content Container -->
+            <div id="members-content" class="min-h-[200px]">
+                <p class="text-gray-500 italic">Carregando lista de membros...</p>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <!-- utils.js DEVE ser carregado primeiro: contém escapeHTML, sanitizeInput, requireSession, isAdmin -->
+    <script src="js/utils.js"></script>
+    <script src="js/members.js"></script>
+    <script>
+        /**
+         * GUARD DE SESSÃO (VISÍVEL POR QUEM TEM PERMISSÃO DE MEMBROS)
+         * Verifica se existe sessão ativa E se o utilizador tem permissão.
+         */
+        (async function () {
+            // 1. Verificar sessão — redireciona para index.html se não estiver autenticado
+            const session = await requireSession('index.html');
+            if (!session) return; // requireSession já fez o redirect
+
+            // 2. Verificar permissão de visualização
+            const canView = await hasPermission('members_view');
+            if (!canView) {
+                await alert("Acesso Negado: Apenas gestores podem visualizar os membros.");
+                window.location.href = "dashboard.html";
+                return;
+            }
+
+            // 3. Mostrar botão de criação APENAS para o Admin Principal
+            const isFullAdmin = await isAdmin();
+            if (isFullAdmin) {
+                const btnCreate = document.getElementById('btn-create-member');
+                if (btnCreate) {
+                    btnCreate.classList.remove('hidden');
+                    btnCreate.classList.add('flex');
+                    btnCreate.style.display = ''; // Volta ao flex/normal
+                }
+            }
+
+            // 4. Sessão e permissão confirmadas — inicializar módulo
+            if (window.initMembers) {
+                window.initMembers();
+            } else {
+                console.error("ERRO: initMembers não encontrado. Verifica se members.js carregou corretamente.");
+            }
+        })();
+    </script>
+</body>
+
+</html>

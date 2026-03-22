@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Criar Conta - LD Arte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/utils.js"></script>
+</head>
+
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
+
+    <!-- Loader enquanto verifica permissões -->
+    <div id="loading-screen" class="text-center">
+        <svg class="animate-spin h-10 w-10 text-purple-400 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+        </svg>
+        <p class="text-gray-400 text-sm">A verificar permissões...</p>
+    </div>
+
+    <!-- Formulário (oculto até confirmação de admin) -->
+    <div id="form-container" class="hidden bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-2xl w-full max-w-sm border border-white/10">
+        <div class="flex justify-center mb-6">
+            <div class="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                <svg class="h-7 w-7 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-center text-white mb-1">Criar Nova Conta</h2>
+        <p class="text-gray-400 text-center text-xs mb-6">Apenas admins podem criar contas</p>
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-gray-400 text-sm mb-1">Username (Apelido)</label>
+                <input type="text" id="reg-username"
+                    class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition"
+                    placeholder="Ex: ArtistaX" required>
+            </div>
+
+            <div>
+                <label class="block text-gray-400 text-sm mb-1">Email (Usado para login)</label>
+                <input type="email" id="reg-email"
+                    class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition"
+                    placeholder="Ex: artista@exemplo.com" required>
+            </div>
+
+            <div>
+                <label class="block text-gray-400 text-sm mb-1">Senha Provisória (Mín. 6 caracteres)</label>
+                <input type="password" id="reg-password"
+                    class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition"
+                    required>
+            </div>
+
+            <div>
+                <label class="block text-gray-400 text-sm mb-1">Cargo / Função</label>
+                <select id="reg-role"
+                    class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition">
+                    <option value="member">Membro / Artista</option>
+                    <option value="project_manager">Gestão de Projetos</option>
+                    <option value="weekly_manager">Responsável Desenhos Semanais</option>
+                    <option value="commission_manager">Gestor de Comissões</option>
+                </select>
+            </div>
+
+            <button onclick="handleRegister()"
+                class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 rounded-lg hover:from-purple-500 hover:to-blue-500 transition transform hover:scale-[1.02] shadow-lg">
+                Criar Conta
+            </button>
+        </div>
+
+        <p id="reg-msg" class="text-red-400 text-sm mt-4 text-center hidden"></p>
+
+        <p class="text-sm mt-5 text-center text-gray-500">
+            <a href="dashboard.html" class="text-gray-400 hover:text-white underline">← Voltar ao Dashboard</a>
+        </p>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Verifica se é admin antes de mostrar o formulário
+        async function checkAdminAccess() {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (!session) {
+                await alert("Acesso negado. Tens de fazer login como Admin.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            // Verificar role na base de dados (mais seguro que user_metadata)
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
+
+            const role = profile?.role || session.user.user_metadata?.role || '';
+
+            if (!profile || profile.role !== 'admin') {
+                await alert("Acesso Negado: Apenas a conta Mestre pode registar novos membros.");
+                window.location.href = "dashboard.html";
+                return;
+            }
+
+            // É admin — mostrar formulário
+            document.getElementById('loading-screen').classList.add('hidden');
+            document.getElementById('form-container').classList.remove('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', checkAdminAccess);
+    </script>
+</body>
+
+</html>

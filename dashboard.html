@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Gestão - Grupo de Desenhos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="bg-gray-900 text-white font-sans antialiased overflow-hidden selection:bg-purple-500 selection:text-white">
+
+    <!-- 1. Header Bar -->
+    <header class="h-16 glass fixed top-0 w-full z-50 flex items-center justify-between px-6 lg:px-12 shadow-lg">
+        <div class="flex items-center gap-3">
+            <!-- Logo / Brand -->
+            <div
+                class="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-500 rounded-lg flex items-center justify-center shadow-lg">
+                <span class="font-bold text-white text-lg">L</span>
+            </div>
+            <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                LD Arte Dashboard
+            </h1>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <div class="text-right hidden sm:block">
+                <p class="text-xs text-gray-400 uppercase tracking-wider">Logado como</p>
+                <p id="user-display" class="text-sm font-semibold text-white">Carregando...</p>
+            </div>
+            <button onclick="handleLogout()"
+                class="text-gray-400 hover:text-white transition p-2 rounded-full hover:bg-white/5" title="Sair">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- 2. Main Container -->
+    <main class="pt-24 pb-12 px-6 lg:px-12 h-screen overflow-y-auto custom-scrollbar">
+
+        <!-- A. HOME: Card Grid -->
+        <div id="dashboard-home" class="max-w-7xl mx-auto h-full flex flex-col justify-center">
+
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white">Bem-vindo, Artista.</h2>
+                <p class="text-gray-400 text-lg">O que vamos criar hoje?</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full">
+
+                <!-- Card 1: Projetos -->
+                <div onclick="showSection('projetos')"
+                    class="nav-card group p-8 rounded-2xl cursor-pointer flex flex-col items-center justify-center text-center h-64 gap-6 relative overflow-hidden">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-500">
+                    </div>
+                    <div
+                        class="p-4 bg-blue-500/10 rounded-full text-blue-400 group-hover:text-blue-300 group-hover:scale-110 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2">Projetos</h3>
+                        <p class="text-gray-400 group-hover:text-gray-300">Gerir trabalhos em curso</p>
+                    </div>
+                </div>
+
+                <!-- Card 2: Desenhos Semanais -->
+                <div onclick="showSection('semanais')"
+                    class="nav-card group p-8 rounded-2xl cursor-pointer flex flex-col items-center justify-center text-center h-64 gap-6 relative overflow-hidden">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-500">
+                    </div>
+                    <div
+                        class="p-4 bg-purple-500/10 rounded-full text-purple-400 group-hover:text-purple-300 group-hover:scale-110 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2">Desenhos Semanais</h3>
+                        <p class="text-gray-400 group-hover:text-gray-300">Temas, Calendário e Semestres</p>
+                    </div>
+                </div>
+
+                <!-- Card 3: Comissões -->
+                <div onclick="showSection('comissoes')"
+                    class="nav-card group p-8 rounded-2xl cursor-pointer flex flex-col items-center justify-center text-center h-64 gap-6 relative overflow-hidden">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-green-600/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-500">
+                    </div>
+                    <div
+                        class="p-4 bg-green-500/10 rounded-full text-green-400 group-hover:text-green-300 group-hover:scale-110 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2">Comissões</h3>
+                        <p class="text-gray-400 group-hover:text-gray-300">Feed de trabalhos pagos</p>
+                    </div>
+                </div>
+
+                <!-- Card 4: Membros (Apenas Admin via JS -> Agora visível, controle no destino) -->
+                <div id="card-members" onclick="window.location.href='membros.html'"
+                    class="nav-card group p-8 rounded-2xl cursor-pointer flex flex-col items-center justify-center text-center h-64 gap-6 relative overflow-hidden hidden">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-indigo-600/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-500">
+                    </div>
+                    <div
+                        class="p-4 bg-indigo-500/10 rounded-full text-indigo-400 group-hover:text-indigo-300 group-hover:scale-110 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2">Membros</h3>
+                        <p class="text-gray-400 group-hover:text-gray-300">Gerir Comunidade</p>
+                    </div>
+                </div>
+
+                <!-- Card 5: Perfil (Apenas Membros via JS) -->
+                <div id="card-profile" onclick="window.location.href='perfil.html'"
+                    class="nav-card group p-8 rounded-2xl cursor-pointer flex flex-col items-center justify-center text-center h-64 gap-6 relative overflow-hidden">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-pink-600/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-500">
+                    </div>
+                    <div
+                        class="p-4 bg-pink-500/10 rounded-full text-pink-400 group-hover:text-pink-300 group-hover:scale-110 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2">Meu Perfil</h3>
+                        <p class="text-gray-400 group-hover:text-gray-300">Estatísticas e Senha</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- B. CONTENT PAGES: (Projetos, Semanais, etc) -->
+        <div id="dashboard-content" class="max-w-7xl mx-auto hidden animate-fade-in">
+
+            <!-- Navbar de Voltar -->
+            <div class="mb-8 flex items-center">
+                <button onclick="showHome()"
+                    class="flex items-center gap-2 text-gray-400 hover:text-white transition px-4 py-2 rounded-lg hover:bg-white/5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    <span>Voltar ao Menu</span>
+                </button>
+            </div>
+
+            <!-- SEÇÃO: PROJETOS -->
+            <div id="projetos" class="section hidden">
+                <div class="flex justify-between items-center mb-8 border-b border-gray-700 pb-4">
+                    <h2 class="text-3xl font-bold text-blue-400">Gestão de Projetos</h2>
+                    <div class="flex items-center gap-3">
+                        <button id="btn-trash-projects" onclick="openTrashProjects()"
+                            class="hidden bg-gray-800 text-gray-400 px-4 py-2 rounded-lg hover:bg-red-500/20 hover:text-red-400 border border-gray-700 transition shadow-lg flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Lixeira
+                        </button>
+                        <button id="btn-add-project"
+                            class="hidden bg-blue-600 px-6 py-2 rounded-lg hover:bg-blue-500 transition shadow-lg shadow-blue-600/20"
+                            onclick="addProject()">+ Novo Projeto</button>
+                    </div>
+                </div>
+                <div id="projects-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <p class="text-gray-500 italic">A carregar projetos...</p>
+                </div>
+            </div>
+
+            <!-- SEÇÃO: SEMANAIS (Visual Refinado) -->
+            <div id="semanais" class="section hidden">
+
+                <!-- 1. Top Bar com Back foi global, não precisa aqui -->
+
+                <!-- 2. Widgets de Topo (Grid 2 colunas) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+
+                    <!-- Widget Semestre -->
+                    <div id="semester-widget"
+                        class="bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700/50 flex flex-col justify-center">
+                        <!-- Injetado por JS -->
+                    </div>
+
+                    <!-- Widget Próximo Tema -->
+                    <!-- Gradient Border Effect -->
+                    <div class="relative group rounded-xl bg-gray-900 shadow-lg">
+                        <div
+                            class="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-75 group-hover:opacity-100 transition duration-300 blur-sm">
+                        </div>
+                        <div id="next-theme-widget"
+                            class="relative bg-gray-900 rounded-xl p-6 h-full flex items-center">
+                            <!-- Injetado por JS -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 3. Calendário (Header) -->
+                <div class="flex justify-between items-end mb-6">
+                    <div class="flex items-center gap-4">
+                        <h2 class="text-2xl font-bold text-white">Calendário de Temas</h2>
+                        <div class="flex items-center bg-gray-800 rounded-lg p-1 border border-gray-700">
+                            <button onclick="changeYear(-1)" class="p-1 hover:text-blue-400 text-gray-400 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            <span id="calendar-year-display" class="px-2 font-mono font-bold text-blue-300">2026</span>
+                            <button onclick="changeYear(1)" class="p-1 hover:text-blue-400 text-gray-400 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button id="btn-add-theme" onclick="openNewThemeModal()"
+                        class="text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded border border-gray-600 transition">
+                        + Adicionar Novo Tema
+                    </button>
+                </div>
+
+                <!-- 4. Calendário Grid (Months) -->
+                <div id="annual-calendar" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Meses serão injetados aqui -->
+                </div>
+
+                <!-- 5. Painel: Registar Entregas Semanais (Apenas Admin) -->
+                <div id="submissions-panel" class="mt-12 hidden">
+                    <div class="flex items-center gap-3 mb-6 border-t border-gray-700 pt-8">
+                        <div class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Registar Entregas Semanais</h3>
+                            <p class="text-xs text-gray-500">Marca quem entregou o desenho de cada semana</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800 rounded-xl border border-gray-700 p-6">
+                        <!-- Selector de Tema -->
+                        <div class="mb-5">
+                            <label class="block text-xs uppercase text-gray-500 font-bold mb-2">Semana / Tema</label>
+                            <select id="submissions-theme-select"
+                                onchange="loadSubmissionsForTheme(this.value)"
+                                class="w-full bg-gray-900 border border-gray-700 focus:border-purple-500 focus:outline-none rounded-lg p-3 text-white transition">
+                                <option value="">-- Selecione um tema --</option>
+                            </select>
+                        </div>
+
+                        <!-- Área da checklist (escondida até seleccionar tema) -->
+                        <div id="submissions-checklist-area" class="hidden">
+
+                            <!-- Header com contagem -->
+                            <div class="flex items-center justify-between mb-3">
+                                <label class="block text-xs uppercase text-gray-500 font-bold">Membros</label>
+                                <span id="submissions-count" class="text-xs text-purple-400 font-mono bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
+                                    0 entregas
+                                </span>
+                            </div>
+
+                            <!-- Checklist de membros -->
+                            <div id="submissions-panel-list"
+                                class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 mb-5 max-h-64 overflow-y-auto custom-scrollbar p-2 bg-gray-950/50 rounded border border-gray-800">
+                                <!-- Injetado por JS -->
+                            </div>
+
+                            <!-- Botão Guardar -->
+                            <div class="flex justify-end">
+                                <button onclick="saveSubmissionsFromPanel()"
+                                    id="btn-save-submissions"
+                                    class="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold rounded-lg shadow-lg shadow-purple-600/20 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Guardar Entregas
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Estado vazio -->
+                        <div id="submissions-empty-state" class="text-center py-6 text-gray-600 text-sm">
+                            Seleciona um tema acima para ver e editar as entregas
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SEÇÃO: COMISSÕES -->
+            <div id="comissoes" class="section hidden">
+
+                <!-- Header & Tabs -->
+                <div
+                    class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-gray-700 pb-4 gap-4">
+                    <h2 class="text-3xl font-bold text-green-400">Comissões & Encomendas</h2>
+
+                    <div class="flex gap-6 bg-gray-800 rounded-lg p-1.5">
+                        <button id="btn-tab-feed" onclick="switchCommissionsTab('feed')"
+                            class="comm-tab-btn px-4 py-1.5 rounded transition text-green-400 border-b-2 border-green-400 font-medium">
+                            Novidades
+                        </button>
+                        <button id="btn-tab-registry" onclick="switchCommissionsTab('registry')"
+                            class="comm-tab-btn px-4 py-1.5 rounded transition text-gray-400 hover:text-white hover:bg-gray-700">
+                            Registo de Artistas
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB 1: FEED -->
+                <div id="comm-tab-feed" class="animate-fade-in">
+                    <!-- Caixa de Publicação (Visível apenas para Admin via JS) -->
+                    <div id="news-post-box" class="hidden bg-gray-800 p-6 rounded-xl mb-6 border border-gray-700 shadow-md">
+                        <textarea id="comm-text"
+                            class="w-full bg-gray-900 p-4 rounded-lg text-white border border-gray-700 focus:outline-none focus:border-green-500 transition resize-none h-24"
+                            placeholder="Nova atualização de comissão..."></textarea>
+                        <div class="flex justify-end mt-2">
+                            <button
+                                class="bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded-lg transition font-semibold shadow-lg shadow-green-600/20"
+                                onclick="postCommission()">Publicar</button>
+                        </div>
+                    </div>
+                    <div id="commissions-feed" class="space-y-4"></div>
+                </div>
+
+                <!-- TAB 2: REGISTO -->
+                <div id="comm-tab-registry" class="hidden animate-fade-in">
+
+                    <!-- Top Section: Form + Terms -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+
+                        <!-- Col 1: Formulário -->
+                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 h-fit">
+                            <h3 class="text-xl font-bold text-white mb-4">Inscrever-se como Artista</h3>
+                            <p class="text-sm text-gray-400 mb-6">Deixe seus dados para que clientes possam pedir
+                                comissões.</p>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-gray-400 text-xs uppercase font-bold mb-1">Nome
+                                        Artístico</label>
+                                    <input type="text" id="artist-name"
+                                        class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:border-green-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-400 text-xs uppercase font-bold mb-1">Estilo (Ex:
+                                        Realista, Cartoon)</label>
+                                    <input type="text" id="artist-style"
+                                        class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:border-green-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-400 text-xs uppercase font-bold mb-1">Condições (faço,
+                                        não faço, etc)</label>
+                                    <textarea id="artist-conditions" rows="4"
+                                        class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:border-green-500 focus:outline-none placeholder-gray-600"
+                                        placeholder="Ex: Pagamento adiantado, prazo 1 semana..."></textarea>
+                                </div>
+                                <button onclick="registerArtist()"
+                                    class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded shadow-lg shadow-green-600/20 transition">
+                                    Concluir Inscrição
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Col 2: Termos da LD (Admin Editable) -->
+                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 flex flex-col h-full">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-white">Termos e Condições da LD</h3>
+                                <button onclick="saveLDTerms()"
+                                    id="btn-save-terms"
+                                    class="hidden text-xs bg-gray-700 hover:bg-gray-600 text-green-400 px-3 py-1 rounded border border-gray-600 transition">
+                                    Salvar (Admin)
+                                </button>
+                            </div>
+                            <textarea id="ld-terms-text" disabled
+                                class="w-full flex-1 bg-gray-900 border border-gray-700 rounded p-4 text-gray-300 text-sm focus:outline-none focus:border-green-500 resize-none leading-relaxed custom-scrollbar disabled:opacity-75 disabled:cursor-not-allowed"
+                                placeholder="Escreva aqui as regras da Lucas Design para os artistas..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Section: Lista de Artistas -->
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-4 border-b border-gray-700 pb-2">Diretório de
+                            Artistas Inscritos</h3>
+                        <div id="artists-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- JS Injects here -->
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        </div>
+
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/utils.js"></script> <!-- Segurança -->
+    <script src="script.js"></script>
+    <script src="js/daily-sync.js"></script>
+    <script src="js/weekly-drawings.js"></script>
+    <script src="js/projects.js"></script>
+    <script src="js/commissions.js"></script>
+
+
+    <!-- MODAL: Novo Tema -->
+    <!-- MODAL: Novo Tema (Injetado via JS) -->
+
+    <!-- MODAL: Lixeira Projetos -->
+    <div id="trash-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-gray-900">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    Lixeira de Projetos
+                </h3>
+                <button onclick="closeTrashProjects()" class="text-gray-500 hover:text-white transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-1 custom-scrollbar">
+                <div id="trash-list" class="space-y-4">
+                    <!-- JS injeta os projetos apagados aqui -->
+                </div>
+            </div>
+            
+            <div class="p-4 border-t border-gray-800 bg-gray-950 flex justify-between items-center">
+                <span class="text-xs text-gray-500" id="trash-count">0 projetos</span>
+                <button onclick="emptyTrash()" class="text-red-500 hover:text-red-400 text-sm font-bold flex items-center gap-1 transition opacity-50 hover:opacity-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    Esvaziar Lixeira
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal (Global) -->
+    <div id="feedback-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-sm shadow-2xl p-6 text-center transform transition-all duration-200 scale-95 opacity-0" id="feedback-modal-content">
+            <div id="feedback-icon" class="mx-auto w-16 h-16 mb-4 rounded-full flex items-center justify-center">
+                <!-- Icon injetado via JS -->
+            </div>
+            <h3 id="feedback-title" class="text-xl font-bold text-white mb-2"></h3>
+            <p id="feedback-message" class="text-gray-400 text-sm mb-6"></p>
+            <button onclick="closeFeedbackModal()" class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-lg transition">
+                Fechar
+            </button>
+        </div>
+    </div>
+
+</body>
+
+</html>
+```
