@@ -485,7 +485,7 @@
 
             closeEditMember();
             await window.customAlert("O membro e todos os seus perfis foram apagados do sistema.", "Conta Eliminada");
-            await loadMembers();
+            await initMembers();
             
         } catch (err) {
             console.error("Erro ao apagar membro:", err);
