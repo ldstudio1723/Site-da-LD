@@ -239,7 +239,7 @@
                 <div class="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl custom-scrollbar">
                     
                     <div class="p-6 border-b border-gray-800 flex justify-between items-center sticky top-0 bg-gray-900 z-10">
-                        <h3 id="modal-title" class="text-2xl font-bold text-white">Project Editor</h3>
+                        <h3 id="modal-title" class="text-2xl font-bold text-white">Gestor de Projetos</h3>
                         <button onclick="closeProjectModal()" class="text-gray-500 hover:text-white">✕</button>
                     </div>
 
@@ -258,7 +258,7 @@
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-gray-400 text-sm mb-1">Status</label>
+                                <label class="block text-gray-400 text-sm mb-1">Estado (Status)</label>
                                 <select id="proj-status" class="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white outline-none focus:border-blue-500">
                                     <option value="planejamento">Planejamento</option>
                                     <option value="em_andamento">Em Andamento</option>
@@ -267,7 +267,7 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-gray-400 text-sm mb-1">Deadline</label>
+                                <label class="block text-gray-400 text-sm mb-1">Prazo / Entrega</label>
                                 <input type="date" id="proj-deadline" class="w-full bg-gray-800 border border-gray-700 rounded p-2 text-white outline-none focus:border-blue-500">
                             </div>
                         </div>
@@ -388,9 +388,9 @@
 
     // 4. LÓGICA DE SALVAMENTO SQL (COMPLEXA)
     async function saveProjectSQL() {
-        // Segurança Extra
-        if (currentUserRole !== 'admin') {
-            alert("Sem permissão.");
+        // SEGURANÇA: Validar se o utilizador tem permissão para esta área
+        if (!hasProjectsPermission) {
+            alert("Apenas o Gestor de Projetos ou Admin Principal podem salvar alterações.");
             return;
         }
 
