@@ -166,6 +166,10 @@ async function handleLogin() {
         return;
     }
 
+    // Mostrar loader elegante
+    const loader = document.getElementById('login-loader');
+    if (loader) loader.classList.remove('hidden');
+
     // DETECÇÃO INTELIGENTE: EMAIL vs USERNAME
     let finalEmail;
     if (usernameInput.includes('@')) {
@@ -208,6 +212,10 @@ async function handleLogin() {
         window.location.href = "dashboard.html";
 
     } catch (err) {
+        // Esconder loader em caso de erro
+        const loader = document.getElementById('login-loader');
+        if (loader) loader.classList.add('hidden');
+
         console.error("Login error:", err);
         alert(`Erro ao Entrar: ${err.message || 'Credenciais inválidas'}`);
 
