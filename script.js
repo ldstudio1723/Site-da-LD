@@ -12,9 +12,14 @@
 // NOTA: O cliente Supabase é criado uma única vez e guardado em window.supabaseClient
 // para ser partilhado entre todos os módulos JS.
 
+// Salvar referência à biblioteca do CDN antes de a sobrepormos com o cliente
+if (window.supabase && !window.supabaseLib) {
+    window.supabaseLib = window.supabase;
+}
+
 if (!window.supabaseClient) {
-    if (window.supabase) {
-        window.supabaseClient = window.supabase.createClient(
+    if (window.supabaseLib) {
+        window.supabaseClient = window.supabaseLib.createClient(
             "https://matqihrnhwvkbgldocxz.supabase.co",
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hdHFpaHJuaHd2a2JnbGRvY3h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NDk4NzgsImV4cCI6MjA4MzAyNTg3OH0.W7o6qcbVBTsYNPMoh-kSViVIjCOzG7i7mHmGNHHhxuQ"
         );
@@ -109,7 +114,8 @@ async function handleRegister() {
         const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hdHFpaHJuaHd2a2JnbGRvY3h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NDk4NzgsImV4cCI6MjA4MzAyNTg3OH0.W7o6qcbVBTsYNPMoh-kSViVIjCOzG7i7mHmGNHHhxuQ";
 
         // Instanciar um cliente temporário e efémero para evitar o auto-login
-        const tempSupabase = window.supabase.createClient(url, key, {
+        // Usamos window.supabaseLib que é a biblioteca original (CDN)
+        const tempSupabase = window.supabaseLib.createClient(url, key, {
             auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
         });
 
