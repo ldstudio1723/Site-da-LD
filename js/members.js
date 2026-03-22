@@ -249,6 +249,10 @@
 
                 <!-- Footer do Modal -->
                 <div class="p-6 pt-0 flex gap-3">
+                    <button onclick="deleteMember()" id="btn-delete-member"
+                        class="flex px-4 py-2.5 items-center justify-center text-red-500 hover:text-white hover:bg-red-500 border border-red-500/30 rounded-lg transition" title="Eliminar Membro permanentemente">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
                     <button onclick="closeEditMember()"
                         class="flex-1 px-4 py-2.5 text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 rounded-lg transition font-medium">
                         Cancelar
@@ -453,6 +457,42 @@
         }
     }
 
+    /**
+     * Apaga permanentemente o utilizador da tabela Auth enviando uma instrução ao backend.
+     */
+    window.deleteMember = async function() {
+        if (!currentEditingMemberId) return;
+
+        const isFullAdmin = typeof window.isAdmin === 'function' ? await window.isAdmin() : false;
+        if (!isFullAdmin) {
+            await window.customAlert("Apenas administradores de topo (Acesso Total) podem apagar membros.");
+            return;
+        }
+
+        if (!(await window.customConfirm("ATENÇÃO: Deseja mesmo eliminar este membro permanentemente do sistema? Esta ação é irreversível.", "Apagar Conta"))) return;
+
+        try {
+            const spb = window.supabaseClient || window.supabase || supabase;
+            const { error } = await spb.rpc('delete_user_admin', { p_user_id: currentEditingMemberId });
+            
+            if (error) {
+                if (error.message.includes("Could not find the function")) {
+                    throw new Error("O script SQL de eliminação ('create_rpc_delete_user.sql') não foi executado no Supabase.");
+                } else {
+                    throw error;
+                }
+            }
+
+            closeEditMember();
+            await window.customAlert("O membro e todos os seus perfis foram apagados do sistema.", "Conta Eliminada");
+            await loadMembers();
+            
+        } catch (err) {
+            console.error("Erro ao apagar membro:", err);
+            await window.customAlert("Erro ao excluir: " + err.message, "Aviso");
+        }
+    };
+
     // ------------------------------------------
     // EXPOSIÇÃO GLOBAL
     // ------------------------------------------
@@ -461,5 +501,6 @@
     window.openEditMember  = openEditMember;
     window.closeEditMember = closeEditMember;
     window.saveMemberEdit  = saveMemberEdit;
+    window.deleteMember    = deleteMember;
 
 })();
