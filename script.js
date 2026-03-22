@@ -105,7 +105,12 @@ async function handleRegister() {
     const finalEmail = emailStr;
 
     try {
-        const { data, error } = await supabase.auth.signUp({
+        // Instanciar um cliente temporário e efémero para evitar o auto-login
+        const tempSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+            auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+        });
+
+        const { data, error } = await tempSupabase.auth.signUp({
             email: finalEmail,
             password: password,
             options: {
@@ -118,8 +123,10 @@ async function handleRegister() {
 
         if (error) throw error;
 
-        alert("Conta criada com sucesso! O novo utilizador já pode entrar.");
-        window.location.href = "dashboard.html"; // Redirecionar para o dashboard (admin)
+        await window.customAlert("Conta criada com sucesso! O novo utilizador já pode entrar.", "Membro Registado");
+        document.getElementById('reg-username').value = '';
+        document.getElementById('reg-email').value = '';
+        document.getElementById('reg-password').value = '';
 
     } catch (err) {
         console.error("Erro registo:", err);
