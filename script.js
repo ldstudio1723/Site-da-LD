@@ -105,8 +105,11 @@ async function handleRegister() {
     const finalEmail = emailStr;
 
     try {
+        const url = "https://matqihrnhwvkbgldocxz.supabase.co";
+        const key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hdHFpaHJuaHd2a2JnbGRvY3h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0NDk4NzgsImV4cCI6MjA4MzAyNTg3OH0.W7o6qcbVBTsYNPMoh-kSViVIjCOzG7i7mHmGNHHhxuQ";
+
         // Instanciar um cliente temporário e efémero para evitar o auto-login
-        const tempSupabase = window.supabase.createClient(supabaseUrl, supabaseKey, {
+        const tempSupabase = window.supabase.createClient(url, key, {
             auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
         });
 
