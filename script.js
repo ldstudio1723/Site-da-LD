@@ -244,6 +244,8 @@ function showHome() {
     // Mostra a área de Home (Grid)
     const homeArea = document.getElementById('dashboard-home');
     if (homeArea) homeArea.classList.remove('hidden');
+
+    updateMobileTabs('home');
 }
 
 function showSection(sectionId) {
@@ -276,6 +278,21 @@ function showSection(sectionId) {
         console.log(`Sucesso: #${sectionId} agora visível.`);
     } else {
         console.error(`ERRO CRÍTICO: Seção #${sectionId} não encontrada no DOM!`);
+    }
+
+    updateMobileTabs(sectionId);
+}
+
+/**
+ * Atualiza o estado visual da barra de navegação mobile
+ */
+function updateMobileTabs(activeId) {
+    const tabs = document.querySelectorAll('.tab-item');
+    tabs.forEach(tab => tab.classList.remove('active'));
+
+    const activeTab = document.getElementById(`tab-${activeId}`);
+    if (activeTab) {
+        activeTab.classList.add('active');
     }
 }
 
