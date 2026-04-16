@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
-<body class="bg-gray-900 text-white font-sans antialiased overflow-hidden selection:bg-purple-500 selection:text-white">
+<body class="bg-gray-900 text-white font-sans antialiased selection:bg-purple-500 selection:text-white">
 
     <!-- 1. Header Bar -->
     <header class="h-16 glass fixed top-0 w-full z-50 flex items-center justify-between px-6 lg:px-12 shadow-lg">
@@ -41,7 +41,7 @@
     </header>
 
     <!-- 2. Main Container -->
-    <main class="pt-24 pb-12 px-6 lg:px-12 h-screen overflow-y-auto custom-scrollbar">
+    <main class="pt-24 pb-24 px-6 lg:px-12 min-h-screen overflow-y-auto custom-scrollbar">
 
         <!-- A. HOME: Card Grid -->
         <div id="dashboard-home" class="max-w-7xl mx-auto h-full flex flex-col justify-center">
@@ -430,6 +430,34 @@
         </div>
 
     </main>
+
+    <!-- 3. Mobile Navigation Bar (Aba de Projetos/Menu) -->
+    <nav class="mobile-tab-bar">
+        <button onclick="showHome()" class="tab-item active" id="tab-home">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            <span class="text-[10px] mt-1 uppercase font-bold tracking-tighter">Home</span>
+        </button>
+        <button onclick="showSection('projetos')" class="tab-item" id="tab-projetos">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            </svg>
+            <span class="text-[10px] mt-1 uppercase font-bold tracking-tighter">Projetos</span>
+        </button>
+        <button onclick="showSection('semanais')" class="tab-item" id="tab-semanais">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="text-[10px] mt-1 uppercase font-bold tracking-tighter">Semanais</span>
+        </button>
+        <button onclick="showSection('comissoes')" class="tab-item" id="tab-comissoes">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-[10px] mt-1 uppercase font-bold tracking-tighter">Comissões</span>
+        </button>
+    </nav>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
