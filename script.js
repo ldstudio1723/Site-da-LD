@@ -30,6 +30,8 @@ var supabase = window.supabaseClient;
 // ==========================================
 // 1.1 ANTI-PAUSA DA BASE DE DADOS (KEEP-ALIVE)
 // ==========================================
+// NOTA: Além deste ping no browser, existe um GitHub Action que corre a cada 3 dias
+// para garantir que a DB não pausa mesmo sem visitas ao site.
 function startKeepAlivePing() {
     // Função para fazer update à tabela de ping (id = 1)
     async function pingDB() {
