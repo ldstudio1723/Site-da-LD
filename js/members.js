@@ -61,7 +61,7 @@
             // 2. Buscar submissões de desenhos semanais de todos os utilizadores
             const { data: submissions, error: errSubs } = await supabase
                 .from('weekly_drawing_submissions')
-                .select('user_id, created_at')
+                .select('*')
                 .order('created_at', { ascending: false });
 
             if (errSubs) throw errSubs;
@@ -71,7 +71,17 @@
                 const userSubs   = submissions.filter(s => s.user_id === profile.id);
                 let daysSince    = "N/A";
                 let statusColor  = "text-gray-500";
-                const totalDrawings = userSubs.length;
+                
+                let totalDrawings = 0;
+                userSubs.forEach(s => {
+                    let count = 1;
+                    if (s.drawings_count !== undefined && s.drawings_count !== null) {
+                        count = parseInt(s.drawings_count, 10) || 1;
+                    } else if (s.image_url) {
+                        count = parseInt(s.image_url, 10) || 1;
+                    }
+                    totalDrawings += count;
+                });
 
                 if (userSubs.length > 0) {
                     const lastDate = new Date(userSubs[0].created_at);
