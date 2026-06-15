@@ -237,26 +237,30 @@
         }
 
         try {
-            // 1. Buscar o total de desenhos feitos
-            const { count, error: countErr } = await supabase
-                .from('weekly_drawing_submissions')
-                .select('*', { count: 'exact', head: true })
-                .eq('user_id', userId);
-
-            if (!countErr) {
-                const totalEl = document.getElementById('activity-total');
-                if (totalEl) totalEl.innerText = count || 0;
-            }
-
-            // 2. Buscar a data do último desenho
+            // 1. Buscar todas as submissões do utilizador
             const { data: submissions, error } = await supabase
                 .from('weekly_drawing_submissions')
-                .select('created_at')
+                .select('*')
                 .eq('user_id', userId)
-                .order('created_at', { ascending: false })
-                .limit(1);
+                .order('created_at', { ascending: false });
 
             if (error) throw error;
+
+            let totalDrawings = 0;
+            if (submissions) {
+                submissions.forEach(s => {
+                    let count = 1;
+                    if (s.drawings_count !== undefined && s.drawings_count !== null) {
+                        count = parseInt(s.drawings_count, 10) || 1;
+                    } else if (s.image_url) {
+                        count = parseInt(s.image_url, 10) || 1;
+                    }
+                    totalDrawings += count;
+                });
+            }
+
+            const totalEl = document.getElementById('activity-total');
+            if (totalEl) totalEl.innerText = totalDrawings;
 
             if (submissions && submissions.length > 0) {
                 const lastDate = new Date(submissions[0].created_at);
