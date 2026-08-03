@@ -253,6 +253,18 @@
                             placeholder="Deixar vazio para usar o cargo padrão" maxlength="100">
                     </div>
 
+                    <!-- Campo: Nova Senha (exclusivo do Admin Principal) -->
+                    <div class="pt-4 border-t border-gray-800">
+                        <label class="block text-xs uppercase text-red-400 font-bold mb-1.5">Nova Senha (opcional)</label>
+                        <input type="password" id="edit-password" autocomplete="new-password"
+                            class="w-full bg-gray-900 border border-red-500/40 focus:border-red-400 focus:outline-none rounded-lg p-3 text-white transition"
+                            placeholder="Deixar vazio para não alterar" maxlength="72">
+                        <input type="password" id="edit-password-confirm" autocomplete="new-password"
+                            class="w-full bg-gray-900 border border-red-500/40 focus:border-red-400 focus:outline-none rounded-lg p-3 text-white transition mt-2"
+                            placeholder="Confirmar nova senha" maxlength="72">
+                        <p class="text-[10px] text-gray-500 mt-1">⚠️ Apenas o Admin Principal pode alterar a senha de outro membro. Mínimo 6 caracteres.</p>
+                    </div>
+
                     <!-- Mensagem de feedback -->
                     <p id="edit-member-msg" class="text-sm text-center hidden"></p>
                 </div>
@@ -306,6 +318,8 @@
         document.getElementById('edit-username').value    = username || '';
         document.getElementById('edit-role').value       = role || 'member';
         document.getElementById('edit-custom-role').value = customRole || '';
+        document.getElementById('edit-password').value    = '';
+        document.getElementById('edit-password-confirm').value = '';
 
         // Reset e Fetch de Email (apenas admins completos conseguem sucesso nisto)
         const emailInput = document.getElementById('edit-email');
@@ -345,6 +359,8 @@
      */
     function closeEditMember() {
         document.getElementById('edit-member-modal').classList.add('hidden');
+        document.getElementById('edit-password').value = '';
+        document.getElementById('edit-password-confirm').value = '';
         currentEditingMemberId = null;
     }
 
@@ -359,12 +375,25 @@
         const btn = document.getElementById('btn-save-member-edit');
         const msg = document.getElementById('edit-member-msg');
 
+        // SEGURANÇA: revalidar no momento de gravar (defesa em profundidade,
+        // não confiar apenas na checagem feita ao abrir o modal).
+        const isFullAdmin = typeof window.isAdmin === 'function' ? await window.isAdmin() : false;
+        if (!isFullAdmin) {
+            msg.textContent = 'Apenas o Admin Principal pode editar membros.';
+            msg.className   = 'text-sm text-center text-red-400';
+            return;
+        }
+
         // SEGURANÇA: sanitizeInput antes de usar
         const newUsername   = sanitizeInput(document.getElementById('edit-username').value, 50);
         const newRole       = document.getElementById('edit-role').value;
         const rawCustomRole = sanitizeInput(document.getElementById('edit-custom-role').value, 100);
         // Cargo personalizado vazio → null (remove o custom_role, volta ao padrão)
         const newCustomRole = rawCustomRole === '' ? null : rawCustomRole;
+
+        // Nova senha é opcional — só é validada/enviada se o campo for preenchido
+        const newPassword        = document.getElementById('edit-password').value;
+        const newPasswordConfirm = document.getElementById('edit-password-confirm').value;
 
         if (!newUsername) {
             msg.textContent = 'O username não pode estar vazio.';
@@ -377,6 +406,19 @@
             msg.textContent = 'O email fornecido é inválido.';
             msg.className   = 'text-sm text-center text-red-400';
             return;
+        }
+
+        if (newPassword || newPasswordConfirm) {
+            if (newPassword.length < 6) {
+                msg.textContent = 'A nova senha deve ter pelo menos 6 caracteres.';
+                msg.className   = 'text-sm text-center text-red-400';
+                return;
+            }
+            if (newPassword !== newPasswordConfirm) {
+                msg.textContent = 'As senhas não coincidem.';
+                msg.className   = 'text-sm text-center text-red-400';
+                return;
+            }
         }
 
         // UI: estado de loading
@@ -410,6 +452,23 @@
                     throw new Error("O script SQL de atualização de email ('create_rpc_update_email.sql') não foi corrido no Supabase.");
                 } else {
                     throw emailUpdateError;
+                }
+            }
+
+            // 3. Se uma nova senha foi indicada, atualizá-la via RPC de admin
+            //    (a própria função no Supabase volta a confirmar que quem chama é o Admin Principal)
+            if (newPassword) {
+                const { error: passwordUpdateError } = await spb.rpc('update_user_password_admin', {
+                    p_user_id: currentEditingMemberId,
+                    p_new_password: newPassword
+                });
+
+                if (passwordUpdateError) {
+                    if (passwordUpdateError.message.includes("Could not find the function")) {
+                        throw new Error("O script SQL de alteração de senha ('create_rpc_update_password.sql') não foi corrido no Supabase.");
+                    } else {
+                        throw passwordUpdateError;
+                    }
                 }
             }
 
